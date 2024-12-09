@@ -1,0 +1,36 @@
+[
+    {
+        "match_id": "3",
+        "league_id": "1",
+        "home_team": {
+            "team_key": "102",
+            "team_name": "Liverpool"
+        },
+        "away_team": {
+            "team_key": "101",
+            "team_name": "Manchester United"
+        },
+        "date": "2024-12-15",
+        "time": "17:30",
+        "venue": "Anfield",
+        "score": null,
+        "events": []
+    },
+    {
+        "match_id": "4",
+        "league_id": "3",
+        "home_team": {
+            "team_key": "301",
+            "team_name": "Juventus"
+        },
+        "away_team": {
+            "team_key": "302",
+            "team_name": "AC Milan"
+        },
+        "date": "2024-12-20",
+        "time": "20:45",
+        "venue": "Allianz Stadium",
+        "score": null,
+        "events": []
+    }
+]
