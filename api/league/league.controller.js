@@ -17,7 +17,7 @@ export async function getLeague(req, res) {
         const league = await _leagueService.getLeagueById(leagueId)
         res.send(league)
     } catch (err) {
-        loggerService.error(`Cannot get league`, err)
+        logger.error(`Cannot get league`, err)
         res.status(400).send(`Cannot get league`)
     }
 }
@@ -28,7 +28,7 @@ export async function getTeam(req, res) {
         const team = await _leagueService.getTeamById(teamId)
         res.send(team)
     } catch (err) {
-        loggerService.error(`Cannot get team`, err)
+        logger.error(`Cannot get team`, err)
         res.status(400).send(`Cannot get team`)
     }
 }
