@@ -8,9 +8,15 @@ config()
 const BASE_URL = process.env.BASE_URL
 const API_KEY = process.env.API_KEY
 
+export const fetchData = async () => {
+    fetchPastMatches()
+    fetchFutureMatches()
+    fetchAndCalculateLeagueData()
+}
+
 
 // Main function to fetch and calculate data
-const fetchAndCalculateData = async () => {
+const fetchAndCalculateLeagueData = async () => {
     try {
         // Step 1: Fetch leagues data
         const response = await axios.get(`${BASE_URL}`, {
@@ -30,16 +36,13 @@ const fetchAndCalculateData = async () => {
                 return { ...team, ...teamData }
             }))
         }))
-
-        // Step 3: Log the data to see the results
-        logger.info('Fetched and Calculated League and Team Data:')
         await dbService.saveLeagueData(leagues)
 
         // Step 4: Return the data
     } catch (error) {
         logger.error('Error fetching or calculating league data:', error)
     }
-};
+}
 
 // Helper function to fetch teams by league ID
 async function _fetchTeamsByLeagueId(leagueId) {
@@ -244,4 +247,54 @@ async function _calculateTeamStatistics(matches, teamId, type) {
 // // Run the function when the file is executed
 // fetchAndCalculateData()
 
-export { fetchAndCalculateData }
+// Function to fetch past matches
+const fetchPastMatches = async () => {
+    try {
+        const today = new Date()
+        const fromDate = new Date()
+        fromDate.setMonth(today.getMonth() - 6)  // Fetch past matches from the last 6 months
+
+        const formatDate = (date) => date.toISOString().split('T')[0]
+
+        const response = await axios.get(`${BASE_URL}`, {
+            params: {
+                action: 'get_events',
+                APIkey: API_KEY,
+                from: formatDate(fromDate),
+                to: formatDate(today),
+            }
+        })
+
+        const matches = Array.isArray(response.data) ? response.data : []
+        await dbService.savePastMatchData(matches) 
+    } catch (error) {
+        logger.error(`Error fetching past matches`, error)
+        return []
+    }
+}
+
+// Function to fetch future matches
+const fetchFutureMatches = async () => {
+    try {
+        const today = new Date()
+        const nextDate = new Date()
+        nextDate.setMonth(today.getMonth() + 1)  // Fetch future matches for the next 1 month
+
+        const formatDate = (date) => date.toISOString().split('T')[0]
+
+        const response = await axios.get(`${BASE_URL}`, {
+            params: {
+                action: 'get_events',
+                APIkey: API_KEY,
+                from: formatDate(today),
+                to: formatDate(nextDate),
+            }
+        })
+
+        const matches = Array.isArray(response.data) ? response.data : []
+        await dbService.saveFutureMatchData(matches) 
+    } catch (error) {
+        logger.error(`Error fetching future matches for team`, error)
+        return []
+    }
+}

@@ -8,7 +8,9 @@ import { logger } from './logger.service.js'
 
 export const dbService = {
     getCollection,
-    saveLeagueData
+    saveLeagueData,
+    savePastMatchData,
+    saveFutureMatchData
 }
 
 var dbConn = null
@@ -70,6 +72,46 @@ async function saveLeagueData(leagueData) {
         }
     } catch (err) {
         logger.error('Error saving league data:', err)
+        throw err
+    }
+}
+
+async function savePastMatchData(matchData) {
+    try {
+        const db = await connect()
+        const collection = await db.collection('previous-matches')
+
+        if (Array.isArray(matchData)) {
+            // If matchData is an array, insert multiple documents
+            await collection.insertMany(matchData)
+            logger.info(`Created new past matches`)
+        } else {
+            // If matchData is a single object, insert one document
+            await collection.insertOne(matchData)
+            logger.info(`Created new past match: ${matchData.match_id}`)
+        }
+    } catch (err) {
+        logger.error('Error saving past match data:', err)
+        throw err
+    }
+}
+
+async function saveFutureMatchData(matchData) {
+    try {
+        const db = await connect()
+        const collection = await db.collection('future-matches')
+
+        if (Array.isArray(matchData)) {
+            // If matchData is an array, insert multiple documents
+            await collection.insertMany(matchData)
+            logger.info(`Created new future matches`)
+        } else {
+            // If matchData is a single object, insert one document
+            await collection.insertOne(matchData)
+            logger.info(`Created new future match: ${matchData.match_id}`)
+        }
+    } catch (err) {
+        logger.error('Error saving future match data:', err)
         throw err
     }
 }

@@ -55,12 +55,12 @@ app.get("/**", (req, res) => {
 })
 
 
-import { fetchAndCalculateData } from "./services/football-api.service.js"
+import { fetchData } from "./services/football-api.service.js"
 app.listen(PORT, async () => {
     logger.info(`Server running on port ${PORT}`)
 
     try {
-        await fetchAndCalculateData()
+        await fetchData()
         logger.info('Successfully fetched and calculated football data.')
     } catch (error) {
         logger.error('Error fetching and calculating football data:', error)
