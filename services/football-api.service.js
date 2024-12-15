@@ -2,6 +2,7 @@ import axios from 'axios'
 import { logger } from './logger.service.js'
 import { config } from 'dotenv'
 import { dbService } from './db.service.js'
+import { _matchService } from '../api/match/match.service.js'
 
 config()
 
@@ -136,7 +137,7 @@ async function _calculateTeamStatistics(matches, teamId, type) {
     // Loop through matches and calculate statistics
     for (const match of matches) {
         try {
-            const matchData = await gamesService.getPastMatchById(match.match_id) // Assuming you have a service like this
+            const matchData = await _matchService.getPastMatchById(match.match_id) // Assuming you have a service like this
 
             if (matchData && Object.keys(matchData).length > 0) {
                 const isHome = type === 'home'
@@ -278,7 +279,7 @@ const fetchFutureMatches = async () => {
     try {
         const today = new Date()
         const nextDate = new Date()
-        nextDate.setMonth(today.getMonth() + 1)  // Fetch future matches for the next 1 month
+       nextDate.setMonth(today.getMonth() + 1)  // Fetch future matches for the next 1 month
 
         const formatDate = (date) => date.toISOString().split('T')[0]
 
