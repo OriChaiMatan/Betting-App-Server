@@ -27,6 +27,7 @@ const fetchAndCalculateLeagueData = async () => {
             }
         })
         const leagues = Array.isArray(response.data) ? response.data.filter(league => league.league_id == 3 || league.league_id == 202) : []
+        // const leagues = Array.isArray(response.data) ? response.data : []
 
         // Step 2: Fetch teams and matches for each league
         await Promise.all(leagues.map(async (league) => {
@@ -214,7 +215,7 @@ async function _calculateTeamStatistics(matches, teamId, type) {
                         if (!isTeamScorer) return
 
                         const goalTime = parseInt(goal.time, 10)
-                        if (goalTime >= 0 && goalTime <= 15) goalIntervals['0-15']++;
+                        if (goalTime >= 0 && goalTime <= 15) goalIntervals['0-15']++
                         else if (goalTime >= 16 && goalTime <= 30) goalIntervals['16-30']++
                         else if (goalTime >= 31 && goalTime <= 45) goalIntervals['31-45']++
                         else if (goalTime >= 46 && goalTime <= 60) goalIntervals['46-60']++
@@ -253,7 +254,7 @@ const fetchPastMatches = async () => {
     try {
         const today = new Date()
         const fromDate = new Date()
-        fromDate.setMonth(today.getMonth() - 6)  // Fetch past matches from the last 6 months
+        fromDate.setMonth(today.getMonth() - 2)  // Fetch past matches from the last 6 months
 
         const formatDate = (date) => date.toISOString().split('T')[0]
 
