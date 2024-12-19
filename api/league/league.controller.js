@@ -32,3 +32,16 @@ export async function getTeam(req, res) {
         res.status(400).send(`Cannot get team`)
     }
 }
+
+
+export async function getTeamByLeague(req, res) {
+    try {
+        const leagueId = req.params.leagueId
+        const teamId = req.params.teamId
+        const team = await _leagueService.getTeamByLeagueAndTeamId(leagueId,teamId)
+        res.send(team)
+    } catch (err) {
+        logger.error(`Cannot get team`, err)
+        res.status(400).send(`Cannot get team`)
+    }
+}

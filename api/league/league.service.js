@@ -9,7 +9,8 @@ const collectionName = 'leagues'
 export const _leagueService = {
     query,
     getLeagueById,
-    getTeamById
+    getTeamById,
+    getTeamByLeagueAndTeamId
 }
 
 async function query() {
@@ -57,6 +58,35 @@ async function getTeamById(teamId) {
         throw err
     }
 }
+
+async function getTeamByLeagueAndTeamId(leagueId, teamId) {
+    try {
+        const collection = await dbService.getCollection(collectionName);
+
+        // Find the league with the given leagueId
+        const league = await collection.findOne({
+            "league_id": leagueId, // Match the league ID
+            "league_teams.team_key": teamId // Ensure the team is part of the league
+        });
+
+        if (!league) {
+            throw new Error(`Team with team_key ${teamId} not found in league with league_id ${leagueId}`);
+        }
+
+        // Find the specific team in the league_teams array
+        const team = league.league_teams.find(team => team.team_key === teamId);
+
+        if (!team) {
+            throw new Error(`Team with team_key ${teamId} not found in league with league_id ${leagueId}`);
+        }
+
+        return team;
+    } catch (err) {
+        logger.error(`Error finding team with team_key ${teamId} in league with league_id ${leagueId}`, err);
+        throw err;
+    }
+}
+
 
 
 function _buildCriteria() {
