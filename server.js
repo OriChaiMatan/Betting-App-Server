@@ -2,6 +2,7 @@ import express from "express"
 import { createServer } from "node:http";
 import path from "path"
 import cors from "cors"
+import cookieParser from "cookie-parser";
 
 import { logger } from "./services/logger.service.js"
 
@@ -45,12 +46,18 @@ if (process.env.NODE_ENV === 'production') {
 // app.use(cors(corsOptions))
 app.use(express.json())
 
+import { authRoutes } from "./api/auth/auth.routes.js"
+import { userRoutes } from "./api/user/user.routes.js"
 import { matchRoutes } from "./api/match/match.routes.js"
 import { leagueRoutes } from "./api/league/league.routes.js"
+import { setupSocketAPI } from "./services/socket.service.js";
 
+app.use('/api/auth', authRoutes)
+app.use('/api/user', userRoutes)
 app.use('/api/match', matchRoutes)
 app.use('/api/league', leagueRoutes)
 
+setupSocketAPI(server)
 
 app.get("/**", (req, res) => {
     res.sendFile(path.resolve('public/index.html'))
