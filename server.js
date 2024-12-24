@@ -50,7 +50,10 @@ import { authRoutes } from "./api/auth/auth.routes.js"
 import { userRoutes } from "./api/user/user.routes.js"
 import { matchRoutes } from "./api/match/match.routes.js"
 import { leagueRoutes } from "./api/league/league.routes.js"
-import { setupSocketAPI } from "./services/socket.service.js";
+import { setupSocketAPI } from "./services/socket.service.js"
+
+import { setupAsyncLocalStorage } from "./middlewares/setupAls.middleware.js"
+app.all('*', setupAsyncLocalStorage)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)

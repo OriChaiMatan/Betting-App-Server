@@ -48,7 +48,7 @@ async function login(fullname, password) {
 
 }
 
-async function signup({ email, password, imgUrl, fullname }) {
+async function signup({ email, password, fullname, createAt, allowNotifications }) {
     const saltRounds = 10
     if (!password || !fullname || !email) throw 'Missing required signup information'
 
@@ -56,5 +56,5 @@ async function signup({ email, password, imgUrl, fullname }) {
     if (userExist) throw 'Username already taken'
 
     const hash = await bcrypt.hash(password, saltRounds)
-    return userService.add({ password: hash, fullname, imgUrl, email })
+    return userService.add({ password: hash, fullname, email, createAt, allowNotifications })
 }

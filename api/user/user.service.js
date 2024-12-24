@@ -94,6 +94,8 @@ async function add(user) {
             password: user.password,
             fullname: user.fullname,
             email: user.email,
+            createAt: user.createAt || new Date().toISOString(),
+            allowNotifications: user.allowNotifications
         }
         logger.debug(userToAdd)
         const collection = await dbService.getCollection(collectionName)
