@@ -42,13 +42,16 @@ async function login(email, password) {
         _id: user._id,
         fullname: user.fullname,
         email: user.email,
+        favoriteLeagues: user.favoriteLeagues || [],
+        favoriteTeams: user.favoriteTeams || [],
+        favoriteMatches: user.favoriteMatches || []
         // Additional fields required for miniuser
     }
     return miniUser
 
 }
 
-async function signup({ email, password, fullname, createAt, allowNotifications }) {
+async function signup({ email, password, fullname, createAt, allowNotifications, favoriteLeagues, favoriteTeams, favoriteMatches }) {
     const saltRounds = 10
     if (!password || !fullname || !email) throw 'Missing required signup information'
 
@@ -56,5 +59,5 @@ async function signup({ email, password, fullname, createAt, allowNotifications 
     if (userExist) throw 'Username already taken'
 
     const hash = await bcrypt.hash(password, saltRounds)
-    return userService.add({ password: hash, fullname, email, createAt, allowNotifications })
+    return userService.add({ password: hash, fullname, email, createAt, allowNotifications, favoriteLeagues, favoriteTeams, favoriteMatches })
 }

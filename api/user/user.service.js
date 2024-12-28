@@ -95,7 +95,10 @@ async function add(user) {
             fullname: user.fullname,
             email: user.email,
             createAt: user.createAt || new Date().toISOString(),
-            allowNotifications: user.allowNotifications
+            allowNotifications: user.allowNotifications,
+            favoriteLeagues: [],
+            favoriteTeams: [], 
+            favoriteMatches: [],
         }
         logger.debug(userToAdd)
         const collection = await dbService.getCollection(collectionName)
