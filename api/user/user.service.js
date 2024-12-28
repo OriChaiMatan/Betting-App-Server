@@ -9,7 +9,7 @@ export const userService = {
     update, // Update (Edit profile)
     remove, // Delete (remove user)
     query, // List (of users)
-    getByUsername // Used for Login
+    getByUserEmail // Used for Login
 }
 
 const collectionName = 'users'
@@ -48,14 +48,14 @@ async function getById(userId) {
     }
 }
 
-async function getByUsername(fullname) {
+async function getByUserEmail(email) {
     try {
-        console.log(" getByUsername fullname", fullname)
+        console.log(" getByUserEmail email", email)
         const collection = await dbService.getCollection(collectionName)
-        const user = await collection.findOne({ fullname })
+        const user = await collection.findOne({ email })
         return user
     } catch (err) {
-        logger.error(`while finding user by fullname: ${fullname}`, err)
+        logger.error(`while finding user by email: ${email}`, err)
         throw err
     }
 }
