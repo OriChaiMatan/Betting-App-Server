@@ -79,6 +79,7 @@ async function update(user) {
             favoriteLeagues: user.favoriteLeagues,
             favoriteTeams: user.favoriteTeams,
             favoriteMatches: user.favoriteMatches,
+            allowNotifications: user.allowNotifications,
         }
         const collection = await dbService.getCollection(collectionName)
         await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
