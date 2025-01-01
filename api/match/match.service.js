@@ -4,6 +4,8 @@ import { dbService } from "../../services/db.service.js"
 import mongodb from 'mongodb'
 const {ObjectId} = mongodb
 
+const PAGE_SIZE = 2
+
 const previousMatchesCollectionName = 'previous-matches'
 const futureMatchesCollectionName = 'future-matches'
 
@@ -14,12 +16,12 @@ export const _matchService = {
     getFutureMatchById,
 }
 
-async function getPastGames() {
+async function getPastGames(filterBy = {}) {
     try {
-        const criteria = _buildCriteria()
+        const criteria = _buildCriteria(filterBy)
         const collection = await dbService.getCollection(previousMatchesCollectionName)
         const matchCursor = await collection.find(criteria)
-
+        
         const previousMatches = await matchCursor.toArray()
         return previousMatches
     } catch (err) {
@@ -28,9 +30,9 @@ async function getPastGames() {
     }
 }
 
-async function getFutureGames() {
+async function getFutureGames(filterBy = {}) {
     try {
-        const criteria = _buildCriteria()
+        const criteria = _buildCriteria(filterBy)
         const collection = await dbService.getCollection(futureMatchesCollectionName)
         const matchCursor = await collection.find(criteria)
 
@@ -66,7 +68,26 @@ async function getFutureMatchById(matchId) {
     }
 }
 
-function _buildCriteria() {
-    const criteria = {}
-    return criteria
+function _buildCriteria(filterBy) {
+    const criteria = {};
+
+    // Filter by league name
+    if (filterBy.match_league) {
+        criteria.league_name = { $regex: filterBy.match_league, $options: "i" };
+    }
+
+    // Filter by team name (home or away)
+    if (filterBy.match_team) {
+        criteria.$or = [
+            { match_hometeam_name: { $regex: filterBy.match_team, $options: "i" } },
+            { match_awayteam_name: { $regex: filterBy.match_team, $options: "i" } }
+        ];
+    }
+
+    // Filter by match date
+    if (filterBy.match_date) {
+        criteria.match_date = filterBy.match_date; // Assuming match_date is in the same format
+    }
+
+    return criteria;
 }

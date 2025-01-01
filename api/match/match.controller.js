@@ -13,8 +13,15 @@ export async function getFutureMatches(req, res){
 
 export async function getPastMatches(req, res){
     try {
-        const pastMatches = await _matchService.getPastGames()
-        res.send(pastMatches)
+        const filterBy = {
+            match_league: req.query.match_league || '',
+            match_team: req.query.match_team || '',
+            match_date: req.query.match_date || '',
+            // limit: req.query.limit || 10,
+            // offset: req.query.offset || 0
+        }
+        const pastMatches = await _matchService.getPastGames(filterBy)
+        res.json(pastMatches)
     } catch (err) {
         logger.error(`Cannot get past matches`, err)
         res.status(400).send(`Cannot'nt get past matches`)
