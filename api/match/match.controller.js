@@ -17,8 +17,6 @@ export async function getPastMatches(req, res){
             match_league: req.query.match_league || '',
             match_team: req.query.match_team || '',
             match_date: req.query.match_date || '',
-            // limit: req.query.limit || 10,
-            // offset: req.query.offset || 0
         }
         const pastMatches = await _matchService.getPastGames(filterBy)
         res.json(pastMatches)

@@ -1,8 +1,9 @@
 import express from "express"
-import { createServer } from "node:http";
+import { createServer } from "node:http"
 import path from "path"
 import cors from "cors"
-import cookieParser from "cookie-parser";
+import cookieParser from "cookie-parser"
+import cron from "node-cron"
 
 import { logger } from "./services/logger.service.js"
 
@@ -34,17 +35,6 @@ if (process.env.NODE_ENV === 'production') {
     app.use(cors(corsOptions));
 }
 
-// const corsOptions = {
-//     origin: [
-//         'http://127.0.0.1:5001',
-//         'http://localhost:5001',
-//         'http://127.0.0.1:5173',
-//         'http://localhost:5173',
-//     ],
-//     credentials: true
-// }
-
-// app.use(cors(corsOptions))
 app.use(express.json())
 
 import { authRoutes } from "./api/auth/auth.routes.js"
@@ -67,6 +57,15 @@ app.get("/**", (req, res) => {
     res.sendFile(path.resolve('public/index.html'))
 })
 
+cron.schedule("*/30 * * * * *", async () => {
+    console.log("Running scheduled job");
+    try {
+        // await fetchData(); // Replace FUNCTION with fetchData or your desired function
+        logger.info("Successfully fetched and calculated football data.");
+    } catch (err) {
+        logger.error("Scheduled job failed:", err);
+    }
+})
 
 import { fetchData } from "./services/football-api.service.js"
 server.listen(PORT, async () => {
