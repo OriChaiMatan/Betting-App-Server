@@ -82,13 +82,25 @@ async function savePastMatchData(matchData) {
         const collection = await db.collection('previous-matches')
 
         if (Array.isArray(matchData)) {
-            // If matchData is an array, insert multiple documents
-            await collection.insertMany(matchData)
-            logger.info(`Created new past matches`)
+            // Handle an array of matches
+            for (const match of matchData) {
+                const exists = await collection.findOne({ match_id: match.match_id })
+                if (!exists) {
+                    await collection.insertOne(match)
+                    logger.info(`Added new past match: ${match.match_id}`)
+                } else {
+                    logger.info(`Match already exists in past matches: ${match.match_id}`)
+                }
+            }
         } else {
-            // If matchData is a single object, insert one document
-            await collection.insertOne(matchData)
-            logger.info(`Created new past match: ${matchData.match_id}`)
+            // Handle a single match
+            const exists = await collection.findOne({ match_id: matchData.match_id })
+            if (!exists) {
+                await collection.insertOne(matchData)
+                logger.info(`Added new past match: ${matchData.match_id}`)
+            } else {
+                logger.info(`Match already exists in past matches: ${matchData.match_id}`)
+            }
         }
     } catch (err) {
         logger.error('Error saving past match data:', err)
@@ -96,22 +108,36 @@ async function savePastMatchData(matchData) {
     }
 }
 
+
 async function saveFutureMatchData(matchData) {
     try {
         const db = await connect()
         const collection = await db.collection('future-matches')
 
         if (Array.isArray(matchData)) {
-            // If matchData is an array, insert multiple documents
-            await collection.insertMany(matchData)
-            logger.info(`Created new future matches`)
+            // Handle an array of matches
+            for (const match of matchData) {
+                const exists = await collection.findOne({ match_id: match.match_id })
+                if (!exists) {
+                    await collection.insertOne(match)
+                    logger.info(`Added new future match: ${match.match_id}`)
+                } else {
+                    logger.info(`Match already exists: ${match.match_id}`)
+                }
+            }
         } else {
-            // If matchData is a single object, insert one document
-            await collection.insertOne(matchData)
-            logger.info(`Created new future match: ${matchData.match_id}`)
+            // Handle a single match
+            const exists = await collection.findOne({ match_id: matchData.match_id })
+            if (!exists) {
+                await collection.insertOne(matchData)
+                logger.info(`Added new future match: ${matchData.match_id}`)
+            } else {
+                logger.info(`Match already exists: ${matchData.match_id}`)
+            }
         }
     } catch (err) {
         logger.error('Error saving future match data:', err)
         throw err
     }
 }
+

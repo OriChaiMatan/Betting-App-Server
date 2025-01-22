@@ -57,13 +57,14 @@ app.get("/**", (req, res) => {
     res.sendFile(path.resolve('public/index.html'))
 })
 
-cron.schedule("*/30 * * * * *", async () => {
-    console.log("Running scheduled job");
+import { updateDatabase } from "./services/football-api.service.js"
+cron.schedule("0 0 * * *", async () => {
+    console.log("Running scheduled job to update football data.")
     try {
-        // await fetchData(); // Replace FUNCTION with fetchData or your desired function
-        logger.info("Successfully fetched and calculated football data.");
+        await updateDatabase()
+        logger.info("Successfully updated football data.")
     } catch (err) {
-        logger.error("Scheduled job failed:", err);
+        logger.error("Scheduled job failed:", err)
     }
 })
 

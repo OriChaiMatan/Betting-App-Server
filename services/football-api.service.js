@@ -9,15 +9,50 @@ config()
 const BASE_URL = process.env.BASE_URL
 const API_KEY = process.env.API_KEY
 
-export const fetchData = async () => {
-    fetchPastMatches()
-    fetchFutureMatches()
-    fetchAndCalculateLeagueData()
+export async function updateDatabase() {
+    console.log("Updating football database...")
+
+    try {
+        // שלב 1: עדכון משחקי עתיד
+        await updateFutureMatches()
+
+        // שלב 2: מעבר משחקים לעבר
+        await moveMatchesToPast()
+
+        // שלב 3: עדכון קבוצות בליגות
+        await updateTeamsData()
+
+        console.log("Football database updated successfully.")
+    } catch (err) {
+        console.error("Error updating football database:", err)
+        throw err
+    }
+}
+
+async function updateFutureMatches() {
+    console.log("Updating future matches...")
+    // TODO: לממש לוגיקה למשיכת נתונים חדשים מה-API
+}
+
+async function moveMatchesToPast() {
+    console.log("Moving finished matches to past...")
+    // TODO: לממש לוגיקה להזזת משחקים לעבר
+}
+
+async function updateTeamsData() {
+    console.log("Updating team data...")
+    // TODO: לממש לוגיקה לעדכון נתוני קבוצות
 }
 
 
+export const fetchData = async () => {
+    // fetchPastMatches()
+    fetchFutureMatches()
+    // fetchAndCalculateLeagueData()
+}
+
 // Main function to fetch and calculate data
-const fetchAndCalculateLeagueData = async () => {
+async function fetchAndCalculateLeagueData() {
     try {
         // Step 1: Fetch leagues data
         const response = await axios.get(`${BASE_URL}`, {
