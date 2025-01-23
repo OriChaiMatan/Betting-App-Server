@@ -26,5 +26,4 @@ dist-ssr
 node_modules/
 .env
 logs
-config
 data
