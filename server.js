@@ -28,13 +28,13 @@ if (process.env.NODE_ENV === 'production') {
             'http://localhost:5001',
             'http://127.0.0.1:5173',
             'http://localhost:5173',
-            'https://betting-app-server-vv19.onrender.com',
         ],
         credentials: true
     }
     app.use(cors(corsOptions));
 }
 
+app.use(cookieParser())
 app.use(express.json())
 
 import { authRoutes } from "./api/auth/auth.routes.js"
@@ -53,12 +53,21 @@ app.use('/api/league', leagueRoutes)
 
 setupSocketAPI(server)
 
+// app.get("/**", (req, res) => {
+//     res.sendFile(path.resolve('public/index.html'))
+// })
 app.get("/**", (req, res) => {
-    res.sendFile(path.resolve('public/index.html'))
-})
+    const filePath = path.resolve('public', req.path);
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+        res.status(404).send('File not found');
+    } else {
+        res.sendFile(path.resolve('public/index.html'));
+    }
+});
+
 
 import { updateDatabase } from "./services/football-api.service.js"
-cron.schedule("0 1 * * *", async () => {
+cron.schedule("40 18 * * *", async () => {
     logger.info("Running scheduled job to update football data.")
     try {
         await updateDatabase()
