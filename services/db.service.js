@@ -30,7 +30,12 @@ async function connect() {
     if (dbConn) return dbConn
     try {
         // console.log("config.dbURL", config.dbURL)
-        const client = await MongoClient.connect(config.dbURL)
+        const client = await MongoClient.connect(config.dbURL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            sslValidate: true,
+            ssl: true,  // explicitly specify SSL usage
+          });
         const db = client.db(config.dbName)
         dbConn = db
         logger.info('Connected to DB')
