@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "server:prod": "set NODE_ENV=production node server.js"
+    "server:prod": "set NODE_ENV=production node server.js",
+    "dev": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
