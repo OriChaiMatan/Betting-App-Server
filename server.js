@@ -65,6 +65,10 @@ app.get("/**", (req, res) => {
     }
 });
 
+console.log('MongoDB URL:', process.env.MONGO_DB_URL);
+console.log('MongoDB DB Name:', process.env.MONGO_DB_NAME);
+
+
 
 import { updateDatabase } from "./services/football-api.service.js"
 cron.schedule("40 18 * * *", async () => {

@@ -8,6 +8,7 @@
     "server": "nodemon server.js",
     "server:prod": "set NODE_ENV=production&node server.js"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
