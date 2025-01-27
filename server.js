@@ -1,11 +1,11 @@
 import express from "express"
 import { createServer } from "node:http"
+import { config } from "dotenv"
 import path from "path"
 import cors from "cors"
 import cookieParser from "cookie-parser"
 import cron from "node-cron"
 import { logger } from "./services/logger.service.js"
-import { config } from "dotenv"
 import "dotenv/config.js"
 
 config()
@@ -51,35 +51,9 @@ app.use('/api/league', leagueRoutes)
 
 setupSocketAPI(server)
 
-// app.get("/**", (req, res) => {
-//     res.sendFile(path.resolve('public/index.html'))
-// })
-// app.get("/**", (req, res) => {
-//     const filePath = path.resolve('public', req.path);
-//     if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
-//         res.status(404).send('File not found');
-//     } else {
-//         res.sendFile(path.resolve('public/index.html'));
-//     }
-// });
-
-app.get("*", (req, res) => {
-    // Log the requested path for debugging purposes
-    console.log(`Requested URL: ${req.path}`);
-
-    // Resolve the file path
-    const filePath = path.resolve('public', req.path);
-
-    // Check if the requested file is a static file (like .js or .css)
-    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
-        // If the file is a JavaScript or CSS file, check if it exists
-        return res.status(404).send('File not found');
-    } else {
-        // Otherwise, serve index.html as the fallback
-        res.sendFile(path.resolve('public', 'index.html'));
-    }
+app.get("/**", (req, res) => {
+    res.sendFile(path.resolve('public/index.html'))
 })
-
 
 import { updateDatabase } from "./services/football-api.service.js"
 cron.schedule("40 18 * * *", async () => {
