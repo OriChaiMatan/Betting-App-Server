@@ -31,11 +31,8 @@ async function connect() {
     try {
         // console.log("config.dbURL", config.dbURL)
         const client = await MongoClient.connect(config.dbURL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            sslValidate: true,
-            ssl: true,  // explicitly specify SSL usage
-          });
+            tls: true,
+        })
         const db = client.db(config.dbName)
         dbConn = db
         logger.info('Connected to DB')
