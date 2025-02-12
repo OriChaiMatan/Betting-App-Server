@@ -19,8 +19,9 @@ export const _matchService = {
 async function getPastGames(filterBy = {}) {
     try {
         const criteria = _buildCriteria(filterBy)
+        criteria.match_status = "Finished"
         const collection = await dbService.getCollection(previousMatchesCollectionName)
-        const matchCursor = await collection.find(criteria)
+        const matchCursor = await collection.find(criteria).sort({ match_date: -1 }).limit(1000)
         
         const previousMatches = await matchCursor.toArray()
         return previousMatches
