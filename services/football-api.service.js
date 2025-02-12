@@ -172,8 +172,8 @@ async function updateTeamStatisticsInLeague(league, teamKey, homeStatistics, awa
 
 export const fetchData = async () => {
     fetchPastMatches()
-    fetchFutureMatches()
-    fetchAndCalculateLeagueData()
+    // fetchFutureMatches()
+    // fetchAndCalculateLeagueData()
 }
 // const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -361,8 +361,8 @@ async function fetchAndCalculateLeagueData() {
                 APIkey: API_KEY
             }
         })
-        console.log("Fetched Leagues Data:", response.data);
-        const leagues = Array.isArray(response.data) ? response.data.filter(league => league.league_id == 3) : []
+        // console.log("Fetched Leagues Data:", response.data);
+        const leagues = Array.isArray(response.data) ? response.data.filter(league => league.league_id == 3 || league.league_id == 202 || league.league_id == 302 || league.league_id == 152 || league.league_id == 1 || league.league_id == 168 || league.league_id == 175 || league.league_id == 207) : []
         // const leagues = Array.isArray(response.data) ? response.data : []
 
         // Step 2: Fetch teams and matches for each league
@@ -409,8 +409,6 @@ async function _fetchTeamMatches(teamId, leagueId) {
         fromDate.setMonth(today.getMonth() - 6); // 6 months ago
 
         const formatDate = (date) => date.toISOString().split('T')[0]
-
-        await delay(500)
 
         const response = await axios.get(`${BASE_URL}`, {
             params: {
@@ -612,7 +610,7 @@ const fetchPastMatches = async () => {
     try {
         const today = new Date()
         const fromDate = new Date()
-        fromDate.setMonth(today.getMonth() - 6)  // Fetch past matches from the last 6 months
+        fromDate.setMonth(today.getMonth() - 3)  // Fetch past matches from the last 6 months
 
         const formatDate = (date) => date.toISOString().split('T')[0]
 
@@ -625,8 +623,8 @@ const fetchPastMatches = async () => {
             }
         })
 
-        // const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202) : []
-        const matches = Array.isArray(response.data) ? response.data : []
+        const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202 || match.league_id == 302 || match.league_id == 152 || match.league_id == 1 || match.league_id == 168 || match.league_id == 175 || match.league_id == 207) : []
+        // const matches = Array.isArray(response.data) ? response.data : []
         await dbService.savePastMatchData(matches)
     } catch (error) {
         logger.error(`Error fetching past matches`, error)
@@ -652,8 +650,8 @@ const fetchFutureMatches = async () => {
             }
         })
 
-        // const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202) : []
-        const matches = Array.isArray(response.data) ? response.data : []
+        const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202 || match.league_id == 302 || match.league_id == 152 || match.league_id == 1 || match.league_id == 168 || match.league_id == 175 || match.league_id == 207) : []
+        // const matches = Array.isArray(response.data) ? response.data : []
         await dbService.saveFutureMatchData(matches)
     } catch (error) {
         logger.error(`Error fetching future matches for team`, error)
