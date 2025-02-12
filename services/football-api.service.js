@@ -175,8 +175,183 @@ export const fetchData = async () => {
     fetchFutureMatches()
     fetchAndCalculateLeagueData()
 }
+// const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Main function to fetch and calculate data
+// async function fetchAndCalculateLeagueData() {
+//     try {
+//         // Step 1: Fetch leagues data
+//         const response = await axios.get(`${BASE_URL}`, {
+//             params: { action: 'get_leagues', APIkey: API_KEY }
+//         });
+
+//         console.log("Fetched Leagues Data:", response.data);
+//         const leagues = Array.isArray(response.data) ? response.data : [];
+
+//         // Step 2: Fetch teams and matches for each league
+//         for (const league of leagues) {
+//             console.log(`Fetching teams for league: ${league.league_id}`);
+//             const teams = await _fetchTeamsByLeagueId(league.league_id);
+
+//             league.league_teams = await fetchTeamsInBatches(teams, league.league_id);
+//         }
+
+//         await dbService.saveLeagueData(leagues);
+
+//         console.log("League data successfully saved to DB");
+//     } catch (error) {
+//         logger.error('Error fetching or calculating league data:', error);
+//     }
+// }
+
+// async function _fetchTeamsByLeagueId(leagueId) {
+//     try {
+//         const response = await axios.get(`${BASE_URL}`, {
+//             params: { action: 'get_teams', league_id: leagueId, APIkey: API_KEY }
+//         });
+
+//         return Array.isArray(response.data) ? response.data : [];
+//     } catch (error) {
+//         logger.error(`Error fetching teams for league ${leagueId}:`, error);
+//         return [];
+//     }
+// }
+
+// // Fetch teams in batches to avoid overload
+// async function fetchTeamsInBatches(teams, leagueId, batchSize = 5) {
+//     const results = [];
+
+//     for (let i = 0; i < teams.length; i += batchSize) {
+//         const batch = teams.slice(i, i + batchSize);
+
+//         const batchResults = await Promise.all(
+//             batch.map(async (team) => {
+//                 const teamData = await _fetchTeamMatches(team.team_key, leagueId);
+//                 return { ...team, ...teamData };
+//             })
+//         );
+
+//         results.push(...batchResults);
+//         await delay(1000); // 1-second delay between batches
+//     }
+
+//     return results;
+// }
+
+// async function _fetchTeamMatches(teamId, leagueId) {
+//     try {
+//         const today = new Date();
+//         const fromDate = new Date();
+//         fromDate.setMonth(today.getMonth() - 6); // Get data from last 6 months
+
+//         const formatDate = (date) => date.toISOString().split('T')[0];
+
+//         await delay(500); // Prevent API rate-limiting
+
+//         const response = await axios.get(`${BASE_URL}`, {
+//             params: {
+//                 action: 'get_events',
+//                 APIkey: API_KEY,
+//                 team_id: teamId,
+//                 league_id: leagueId,
+//                 from: formatDate(fromDate),
+//                 to: formatDate(today),
+//             }
+//         });
+
+//         const matches = Array.isArray(response.data) ? response.data : [];
+
+//         // Filter matches for home and away teams
+//         const homeMatches = matches
+//             .filter(match => match.match_hometeam_id === teamId)
+//             .slice(0, 6)
+//             .map(match => ({ match_id: match.match_id }));
+
+//         const awayMatches = matches
+//             .filter(match => match.match_awayteam_id === teamId)
+//             .slice(0, 6)
+//             .map(match => ({ match_id: match.match_id }));
+
+//         // Step 5: Calculate team statistics
+//         const homeStats = await _calculateTeamStatistics(homeMatches, teamId, 'home');
+//         const awayStats = await _calculateTeamStatistics(awayMatches, teamId, 'away');
+
+//         return {
+//             last_5_home_matches: homeMatches,
+//             last_5_away_matches: awayMatches,
+//             home_statistic: homeStats,
+//             away_statistic: awayStats,
+//         };
+//     } catch (error) {
+//         logger.error(`Error fetching matches for team ${teamId}:`, error);
+//         return {
+//             last_5_home_matches: [],
+//             last_5_away_matches: [],
+//             home_statistic: {},
+//             away_statistic: {},
+//         };
+//     }
+// }
+
+// async function _calculateTeamStatistics(matches, teamId, type) {
+//     let winCount = 0, drawCount = 0, lossCount = 0;
+//     let totalGoalsFirstHalf = 0, totalGoalsFullMatch = 0;
+
+//     const fullMatchStatsSum = {};
+//     const firstHalfStatsSum = {};
+
+//     const cardsStatistic = {
+//         yellow: { first_half: 0, second_half: 0, full_match: 0 },
+//         red: { first_half: 0, second_half: 0, full_match: 0 }
+//     };
+
+//     const goalIntervals = {
+//         "0-15": 0, "16-30": 0, "31-45": 0,
+//         "46-60": 0, "61-75": 0, "76-90": 0
+//     };
+
+//     for (const match of matches) {
+//         try {
+//             const matchData = await _matchService.getPastMatchById(match.match_id);
+
+//             if (matchData && Object.keys(matchData).length > 0) {
+//                 const isHome = type === 'home';
+//                 const teamScoreFirstHalf = isHome
+//                     ? parseInt(matchData.match_hometeam_halftime_score, 10) || 0
+//                     : parseInt(matchData.match_awayteam_halftime_score, 10) || 0;
+//                 const teamScoreFullMatch = isHome
+//                     ? parseInt(matchData.match_hometeam_ft_score, 10) || 0
+//                     : parseInt(matchData.match_awayteam_ft_score, 10) || 0;
+//                 const opponentScore = isHome
+//                     ? parseInt(matchData.match_awayteam_ft_score, 10) || 0
+//                     : parseInt(matchData.match_hometeam_ft_score, 10) || 0;
+
+//                 if (teamScoreFullMatch > opponentScore) winCount++;
+//                 else if (teamScoreFullMatch === opponentScore) drawCount++;
+//                 else lossCount++;
+
+//                 totalGoalsFirstHalf += teamScoreFirstHalf;
+//                 totalGoalsFullMatch += teamScoreFullMatch;
+//             }
+//         } catch (error) {
+//             logger.warn(`Error fetching data for match ID ${match.match_id}:`, error);
+//         }
+//     }
+
+//     const totalMatches = matches.length || 1;
+
+//     return {
+//         win_percentage: parseFloat(((winCount / totalMatches) * 100).toFixed(2)),
+//         draw_percentage: parseFloat(((drawCount / totalMatches) * 100).toFixed(2)),
+//         loss_percentage: parseFloat(((lossCount / totalMatches) * 100).toFixed(2)),
+//         avg_goals_first_half: (totalGoalsFirstHalf / totalMatches).toFixed(2),
+//         avg_goals_full_match: (totalGoalsFullMatch / totalMatches).toFixed(2),
+//         goal_intervals: goalIntervals,
+//         cards_statistic: cardsStatistic,
+//     };
+// }
+
+
+ // Main function to fetch and calculate data
 async function fetchAndCalculateLeagueData() {
     try {
         // Step 1: Fetch leagues data
@@ -186,7 +361,8 @@ async function fetchAndCalculateLeagueData() {
                 APIkey: API_KEY
             }
         })
-        const leagues = Array.isArray(response.data) ? response.data.filter(league => league.league_id == 3 || league.league_id == 202) : []
+        console.log("Fetched Leagues Data:", response.data);
+        const leagues = Array.isArray(response.data) ? response.data.filter(league => league.league_id == 3) : []
         // const leagues = Array.isArray(response.data) ? response.data : []
 
         // Step 2: Fetch teams and matches for each league
@@ -223,6 +399,8 @@ async function _fetchTeamsByLeagueId(leagueId) {
     }
 }
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Helper function to fetch team matches and calculate statistics
 async function _fetchTeamMatches(teamId, leagueId) {
     try {
@@ -231,6 +409,8 @@ async function _fetchTeamMatches(teamId, leagueId) {
         fromDate.setMonth(today.getMonth() - 6); // 6 months ago
 
         const formatDate = (date) => date.toISOString().split('T')[0]
+
+        await delay(500)
 
         const response = await axios.get(`${BASE_URL}`, {
             params: {
@@ -445,7 +625,8 @@ const fetchPastMatches = async () => {
             }
         })
 
-        const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202) : []
+        // const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202) : []
+        const matches = Array.isArray(response.data) ? response.data : []
         await dbService.savePastMatchData(matches)
     } catch (error) {
         logger.error(`Error fetching past matches`, error)
@@ -471,7 +652,8 @@ const fetchFutureMatches = async () => {
             }
         })
 
-        const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202) : []
+        // const matches = Array.isArray(response.data) ? response.data.filter(match => match.league_id == 3 || match.league_id == 202) : []
+        const matches = Array.isArray(response.data) ? response.data : []
         await dbService.saveFutureMatchData(matches)
     } catch (error) {
         logger.error(`Error fetching future matches for team`, error)

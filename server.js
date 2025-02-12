@@ -56,7 +56,7 @@ app.get("/**", (req, res) => {
 })
 
 import { updateDatabase } from "./services/football-api.service.js"
-cron.schedule("46 18 * * *", async () => {
+cron.schedule("34 20 * * *", async () => {
     logger.info("Running scheduled job to update football data.")
     try {
         await updateDatabase()

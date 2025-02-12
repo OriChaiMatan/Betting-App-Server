@@ -48,12 +48,12 @@ async function saveLeagueData(leagueData) {
         const collection = await db.collection('leagues')
 
         // Check if the league already exists using `league_key`
-        const existingLeague = await collection.findOne({ league_key: leagueData.league_key })
+        const existingLeague = await collection.findOne({ league_id: leagueData.league_id })
 
         if (existingLeague) {
             // If league exists, update the league data
             await collection.updateOne(
-                { league_key: leagueData.league_key },
+                { league_id: leagueData.league_id },
                 { $set: { league_teams: leagueData.league_teams } }
             )
             logger.info(`Updated league: ${leagueData.league_name}`)
