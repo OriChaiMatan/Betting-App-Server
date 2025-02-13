@@ -171,9 +171,9 @@ async function updateTeamStatisticsInLeague(league, teamKey, homeStatistics, awa
 
 
 export const fetchData = async () => {
-    fetchPastMatches()
+    // fetchPastMatches()
     // fetchFutureMatches()
-    // fetchAndCalculateLeagueData()
+    fetchAndCalculateLeagueData()
 }
 // const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -472,9 +472,32 @@ async function _calculateTeamStatistics(matches, teamId, type) {
         "46-60": 0, "61-75": 0, "76-90": 0
     };
 
+    // for (const match of matches) {
+    //     try {
+    //         const matchData = await _matchService.getPastMatchById(match.match_id);
     for (const match of matches) {
         try {
-            const matchData = await _matchService.getPastMatchById(match.match_id);
+            let matchData = await _matchService.getPastMatchById(match.match_id);
+
+            // If match data is missing, fetch it from the API
+            if (!matchData || Object.keys(matchData).length === 0) {
+                console.warn(`Match data missing for match ID ${match.match_id}, fetching from API...`);
+                const apiResponse = await axios.get(`${BASE_URL}`, {
+                    params: {
+                        action: 'get_events',
+                        match_id: match.match_id,
+                        APIkey: API_KEY
+                    }
+                });
+
+                if (Array.isArray(apiResponse.data) && apiResponse.data.length > 0) {
+                    matchData = apiResponse.data[0]; // Take the first match data from API response
+                } else {
+                    console.warn(`No data found for match ID ${match.match_id} in API.`);
+                    continue; // Skip this match if still no data
+                }
+            }
+
 
             if (matchData && Object.keys(matchData).length > 0) {
                 const isHome = type === 'home';
